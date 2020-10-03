@@ -1,4 +1,4 @@
-name: CI
+name: Publish
 
 on: push
   # release:
@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
       with:
-        node-version: {{ matrix.nodejs }}
+        node-version: ${{ matrix.nodejs }}
     - name: install dependencies
       run: yarn install
     - name: run tests
