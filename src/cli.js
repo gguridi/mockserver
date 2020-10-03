@@ -7,6 +7,7 @@ export const PARSER_URLENCODED = "urlencoded";
 
 export default () => {
     let program = new Command();
+    program.version(require("../package.json").version);
     program
         .requiredOption(
             "-m, --mocks <string>",

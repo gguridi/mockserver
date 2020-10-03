@@ -1,6 +1,6 @@
 {
-    "name": "mockserver",
-    "version": "1.0.0",
+    "name": "api-mockserver",
+    "version": "0.0.0",
     "main": "bin/mockserver.js",
     "type": "module",
     "repository": {
