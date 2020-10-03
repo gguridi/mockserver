@@ -1,5 +1,6 @@
 {
-    "name": "api-mockserver",
+    "name": "@gguridi/api-mockserver",
+    "description": "Reimplementation of namshi's mockserver with extended functionality",
     "version": "0.0.0",
     "main": "bin/mockserver.js",
     "type": "module",
