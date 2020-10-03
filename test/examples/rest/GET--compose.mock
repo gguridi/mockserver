@@ -1,0 +1,10 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "resources": [
+        #import ./1/data.json;
+        ,
+        #import ./2/data.json;
+    ]
+}

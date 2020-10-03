@@ -1,0 +1,6 @@
+{{ request.url.includes("eval%20request%20available") ? `HTTP/1.1 488 I'm a teapot` : `HTTP/1.1 200 OK` }}
+Content-Type: text/plain
+X-Query: {{ decodeURIComponent(request.url) }}
+
+Data:
+{{ decodeURIComponent(request.url) }}

@@ -1,0 +1,8 @@
+HTTP/1.1 200 OK
+Content-Type: text/plain
+
+before
+#import ./data.json;
+middle
+#import ./data.json;
+after

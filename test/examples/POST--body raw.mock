@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Content-Type: plain/text
+
+{{ Buffer.isBuffer(request.body) ? request.body.toString() : "not a buffer" }}

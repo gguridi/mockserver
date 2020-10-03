@@ -1,0 +1,7 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{{
+    const isPost = request.method == "POST"; 
+    (isPost) ? "Yeah it's a post" : "Nope, not a post"
+}}

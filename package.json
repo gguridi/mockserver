@@ -1,0 +1,55 @@
+{
+    "name": "mockserver",
+    "version": "1.0.0",
+    "main": "bin/mockserver.js",
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/gguridi/mockserver.git"
+    },
+    "bugs": {
+        "url": "https://github.com/gguridi/mockserver/issues"
+    },
+    "homepage": "https://github.com/gguridi/mockserver#readme",
+    "bin": {
+        "mockserver": "bin/mockserver.js"
+    },
+    "scripts": {
+        "test": "jest",
+        "build": "babel --quiet --out-dir dist src",
+        "start": "npm run build && node bin/mockserver.js -b text -p 8028 -l debug -m ./test/examples"
+    },
+    "author": "Gorka Guridi <gorka.guridi@gmail.com>",
+    "license": "MIT",
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "express": "^4.17.1",
+        "header-case-normalizer": "^1.0.3",
+        "simple-combinatorics": "^1.0.2",
+        "winston": "^3.3.3"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.11.6",
+        "@babel/core": "^7.11.6",
+        "@babel/preset-env": "^7.11.5",
+        "babel-loader": "^8.1.0",
+        "jest": "^26.4.2",
+        "node-mocks-http": "^1.9.0",
+        "supertest": "^5.0.0"
+    },
+    "jest": {
+        "setupFiles": [
+            "./test/setup.js"
+        ],
+        "collectCoverageFrom": [
+            "src/**"
+        ],
+        "coverageDirectory": "./coverage/",
+        "collectCoverage": true
+    },
+    "babel": {
+        "presets": [
+            "@babel/preset-env"
+        ]
+    }
+}

@@ -1,0 +1,7 @@
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Cache-Control: public, max-age=300
+X-Query: test-query
+X-Proxy: test-proxy
+
+Multiple same headers

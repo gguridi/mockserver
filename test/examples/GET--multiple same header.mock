@@ -1,0 +1,8 @@
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Cache-Control: public, max-age=300
+Set-Cookie: A=A; path=/
+Set-Cookie: B=B; path=/
+Set-Cookie: C=C; path=/
+
+Multiple same headers
