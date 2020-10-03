@@ -33,7 +33,7 @@ jobs:
         - name: set release version on package.json
           run: sed -i.bak 's/0\.0\.0/'$RELEASE_VERSION'/g' package.json
         - uses: actions/setup-node@v1
-        with:
+          with:
             node-version: 13
         - name: install dependencies
           run: yarn install
@@ -42,5 +42,5 @@ jobs:
         - name: run build
           run: yarn build
         - uses: JS-DevTools/npm-publish@v1
-        with:
+          with:
             token: ${{ secrets.NPM_TOKEN }}
