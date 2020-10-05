@@ -1,7 +1,7 @@
 # mockserver
 
 [![Build Status](https://travis-ci.org/gguridi/mockserver.svg?branch=master)](https://travis-ci.org/gguridi/mockserver)
-![Publish](https://github.com/gguridi/mockserver/workflows/Publish/badge.svg?branch=master)
+![Publish](https://github.com/gguridi/mockserver/workflows/Publish/badge.svg)
 [![codecov](https://codecov.io/gh/gguridi/mockserver/branch/master/graph/badge.svg)](https://codecov.io/gh/gguridi/mockserver)
 
 Reimplementation of [namshi's mockserver](https://github.com/namshi/mockserver) as it doesn't seem to be getting any support soon and there's lots of improvements that could be done.
