@@ -268,15 +268,31 @@ describe("mockserver", () => {
                 .expect(500, done);
         });
 
-        it("composes from multiple files", (done) => {
-            getResponse("compose", "rest")
-                .expect({
-                    resources: [
-                        { id: 1, name: "resource one" },
-                        { id: 2, name: "resource two" },
-                    ],
-                })
-                .expect(200, done);
+        describe("multiple resources", () => {
+            const resources = {
+                resources: [
+                    { id: 1, name: "resource one" },
+                    { id: 2, name: "resource two" },
+                ],
+            };
+
+            it("composes from multiple files", (done) => {
+                getResponse("compose", "rest")
+                    .expect(resources)
+                    .expect(200, done);
+            });
+
+            it("composes from multiple json files recursively", (done) => {
+                getResponse("compose import", "rest")
+                    .expect((res) => expect(res.body).toMatchObject(resources))
+                    .expect(200, done);
+            });
+
+            it("composes from paths with dashes without problems", (done) => {
+                getResponse("compose dashed", "rest")
+                    .expect((res) => expect(res.body).toMatchObject(resources))
+                    .expect(200, done);
+            });
         });
     });
 

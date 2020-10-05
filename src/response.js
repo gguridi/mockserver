@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import normalizeHeader from "header-case-normalizer";
 import { noEmpty } from "./paths";
+import { evaluateInline, evaluateImport } from "./evaluations";
 
 export default class Response {
     constructor(content, file, request) {
@@ -55,42 +56,10 @@ export default class Response {
         return body ? this.evaluate(body).trim() : "";
     }
 
-    eval(code) {
-        try {
-            const request = this.request;
-            const dirname = path.dirname(this.file);
-            const result = eval(code);
-            return typeof result !== "string" ? JSON.stringify(result) : result;
-        } catch (e) {
-            throw new Error(`Unable to evaluate ${code}`);
-        }
-    }
-
-    evaluateCode(value) {
-        const matched = /\{\{(.+?)(?=}})/gis.exec(value);
-        if (matched) {
-            const [_, code] = matched;
-            value = value.replace(`{{${code}}}`, this.eval(code));
-            return this.evaluateCode(value);
-        }
-        return value;
-    }
-
-    evaluateImport(value) {
-        const matched = /#import ([^;]*);/gis.exec(value);
-        if (matched) {
-            const [_, location] = matched;
-            const file = path.join(".", path.dirname(this.file), location);
-            const isJS = path.extname(file) === ".js";
-            const content = fs.readFileSync(file, { encoding: "utf8" });
-            const result = isJS ? this.eval(content) : content;
-            value = value.replace(`#import ${location};`, result.trim());
-            return this.evaluateImport(value);
-        }
-        return value;
-    }
-
-    evaluate(value) {
-        return this.evaluateCode(this.evaluateImport(value));
+    evaluate(content) {
+        const request = this.request;
+        const dirname = path.dirname(this.file);
+        const imported = evaluateImport(content, this.file)(request, dirname);
+        return evaluateInline(imported)(request, dirname);
     }
 }

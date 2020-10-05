@@ -7,7 +7,6 @@ describe("cli parser", () => {
 
     beforeEach(() => {
         program = newProgram();
-        console.log(program);
     });
 
     describe("'mocks' parameter", () => {
@@ -31,7 +30,6 @@ describe("cli parser", () => {
     describe("'log-level' parameter", () => {
         beforeEach(() => {
             program = newProgram();
-            console.log(program);
         });
         it("default to info", () => {
             program.parse([...argsValid]);

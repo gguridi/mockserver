@@ -1,0 +1,5 @@
+{
+    "info": "the double quotes surrounding import will be replaced as well, making this JSON valid",
+    "remember": "the relative paths are from GET--compose import.mock, not from this file",
+    "resources": ["#import ./1/data.json;", "#import ./2/data.json;"]
+}

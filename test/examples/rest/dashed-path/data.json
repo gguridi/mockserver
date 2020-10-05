@@ -1,0 +1,4 @@
+{
+    "remember": "the relative paths are from GET--compose dashed.mock, not from this file",
+    "resources": ["#import ./1/data.json;", "#import ./2/data.json;"]
+}
