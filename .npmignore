@@ -19,3 +19,4 @@ report.*
 yarn-error.log
 test/*
 yarn.lock
+Dockerfile
