@@ -3,7 +3,6 @@
     "description": "Reimplementation of namshi's mockserver with extended functionality",
     "version": "0.0.0",
     "main": "bin/mockserver.js",
-    "type": "module",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/gguridi/mockserver.git"
