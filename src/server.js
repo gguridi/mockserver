@@ -10,6 +10,7 @@ import { getContent } from "./paths";
 import Response from "./response";
 import express from "express";
 import bodyParser from "body-parser";
+export { evaluateFile, evaluateJSON } from "./evaluations";
 
 export const logging = (level) => {
     const logger = winston.createLogger({
