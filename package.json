@@ -2,7 +2,7 @@
     "name": "@gguridi/mockserver",
     "description": "Reimplementation of namshi's mockserver with extended functionality",
     "version": "0.0.0",
-    "main": "dist/mockserver.js",
+    "main": "dist/server.js",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/gguridi/mockserver.git"
