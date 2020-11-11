@@ -20,7 +20,7 @@
         "start": "npm run build && node bin/mockserver.js -b text -p 8028 -l debug -m ./test/examples",
         "docker-start": "node bin/mockserver.js -p 80 -l debug -m /opt/api",
         "docker-build": "docker build -t mockserver .",
-        "docker-run": "docker run --name api -d -v ${PWD}/test/examples:/opt/api -p 80:80 mockserver",
+        "docker-run": "docker run --name api -d -v ${PWD}/test/examples:/opt/api -p 8000:80 mockserver",
         "docker-stop": "docker rm -f api || true"
     },
     "author": "Gorka Guridi <gorka.guridi@gmail.com>",

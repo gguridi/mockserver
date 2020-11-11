@@ -3,7 +3,7 @@ import frisby from "frisby";
 describe("docker integration", () => {
     frisby.globalSetup({
         request: {
-            baseUrl: "http://localhost",
+            baseUrl: "http://localhost:8000",
             rawBody: true,
             inspectOnFailure: true,
         },
