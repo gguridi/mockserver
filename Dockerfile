@@ -9,7 +9,6 @@ COPY . ${SERVER_FOLDER}
 WORKDIR ${SERVER_FOLDER}
 
 RUN yarn install
-RUN yarn test
 RUN yarn build
 
 ENTRYPOINT ["yarn", "docker-start"]
