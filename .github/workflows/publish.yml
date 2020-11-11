@@ -19,6 +19,8 @@ jobs:
         node-version: ${{ matrix.nodejs }}
     - name: install dependencies
       run: yarn install
+    - name: build and run mockserver docker
+      run: yarn docker-build && yarn docker-run
     - name: run tests
       run: yarn test
 
