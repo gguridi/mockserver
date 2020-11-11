@@ -1,0 +1,22 @@
+name: Testing
+
+on: push
+
+jobs:
+  mockserver-test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        nodejs: [11, 12, 13, 14]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.nodejs }}
+    - name: install dependencies
+      run: yarn install
+    - name: build and run mockserver docker
+      run: yarn run docker-build && yarn run docker-run
+    - name: run tests
+      run: yarn test

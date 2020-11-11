@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:12.19.0-alpine3.12
 
 ENV SERVER_FOLDER=/opt/mockserver
 
@@ -9,7 +9,6 @@ COPY . ${SERVER_FOLDER}
 WORKDIR ${SERVER_FOLDER}
 
 RUN yarn install
-RUN yarn test
 RUN yarn build
 
 ENTRYPOINT ["yarn", "docker-start"]
