@@ -1,9 +1,10 @@
+import winston from "winston";
 import fs from "fs";
 import path from "path";
 
 export const evaluateLocation = (sourceFile, relativeFile) => {
     const sourceDir = path.dirname(sourceFile);
-    return path.join(".", sourceDir, relativeFile);
+    return path.join(sourceDir, relativeFile);
 };
 
 export const evaluateCode = (code) => {
@@ -12,6 +13,7 @@ export const evaluateCode = (code) => {
             const result = eval(code);
             return typeof result !== "string" ? JSON.stringify(result) : result;
         } catch (e) {
+            winston.debug(`Unable to evaluate ${code}: ${e}`);
             throw new Error(`Unable to evaluate ${code}`);
         }
     };
