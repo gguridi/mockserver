@@ -38,7 +38,7 @@ export const getFiles = (request, options) => {
 
 const getQueryElements = (request) => {
     const query = getQuery(request);
-    return query ? [`--${query}`] : [];
+    return query ? query.split("&").map((param) => `--${param}`) : [];
 };
 
 const getBodyElements = (request) => {

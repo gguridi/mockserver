@@ -1,7 +1,6 @@
 import httpMocks from "node-mocks-http";
 import {
     getPathWildcards,
-    getPathParentWildcards,
     getFilenames,
     getFiles,
     getContent,
@@ -45,7 +44,7 @@ describe("paths to use for the request", () => {
         ];
 
         it.each(expected)(
-            "uses the watched headers from options",
+            "uses the watched headers from options to match %s",
             (expected) => {
                 const permutations = getFilenames(request, { headers });
                 expect(permutations).toContainEqual(expected);
@@ -53,7 +52,7 @@ describe("paths to use for the request", () => {
         );
 
         it.each(expected)(
-            "uses the watched headers from MOCK_HEADERS envvar",
+            "uses the watched headers from MOCK_HEADERS envvar to match %s",
             (expected) => {
                 process.env["MOCK_HEADERS"] = headers;
                 expect(getFilenames(request, {})).toContainEqual(expected);
@@ -62,7 +61,7 @@ describe("paths to use for the request", () => {
         );
 
         it.each(expected)(
-            "removes the query parameters from path",
+            "removes the query parameters from path to match %s",
             (expected) => {
                 request.url = "/test/42/details?this is to ignore";
                 const permutations = getFilenames(request, { headers });
@@ -85,17 +84,31 @@ describe("paths to use for the request", () => {
             ]);
         });
 
-        it("uses query parameters in the permutations", () => {
-            request.url = "/?test=value";
-            request.headers = {};
-            expect(getFilenames(request, {})).toEqual([
-                "GET",
-                "GET--test=value",
-                "GET--body",
-                "GET--body--test=value",
-                "GET--test=value--body",
-            ]);
-        });
+        it.each([
+            "GET",
+            "GET--testA=valueA",
+            "GET--testB=valueB",
+            "GET--body",
+            "GET--testB=valueB--testA=valueA",
+            "GET--body--testA=valueA",
+            "GET--testA=valueA--testB=valueB",
+            "GET--body--testB=valueB",
+            "GET--testA=valueA--body",
+            "GET--testB=valueB--body",
+            "GET--body--testB=valueB--testA=valueA",
+            "GET--testB=valueB--body--testA=valueA",
+            "GET--body--testA=valueA--testB=valueB",
+            "GET--testA=valueA--body--testB=valueB",
+            "GET--testB=valueB--testA=valueA--body",
+            "GET--testA=valueA--testB=valueB--body",
+        ])(
+            "uses query parameters in the permutations to get %s",
+            (expected) => {
+                request.url = "/?testA=valueA&testB=valueB";
+                request.headers = {};
+                expect(getFilenames(request, {})).toContainEqual(expected);
+            },
+        );
     });
 
     describe("current path wildcard permutations", () => {

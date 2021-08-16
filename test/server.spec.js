@@ -1,4 +1,5 @@
 import request from "supertest";
+import { performance } from "perf_hooks";
 
 describe("mockserver", () => {
     let mockserver;
@@ -20,7 +21,7 @@ describe("mockserver", () => {
     describe("request body", () => {
         it("offers the body as json by default", (done) => {
             const body = { test: "value" };
-            return request(mockserver)
+            request(mockserver)
                 .post(`/?body json`)
                 .send(body)
                 .expect(body)
@@ -41,7 +42,7 @@ describe("mockserver", () => {
 
             it("offers the body as string if --body text is passed", (done) => {
                 const body = "this is a body string";
-                return request(textServer)
+                request(textServer)
                     .post(`/?body text`)
                     .type("text/plain")
                     .send(body)
@@ -64,7 +65,7 @@ describe("mockserver", () => {
 
             it("offers the body as raw buffer if --body raw is passed", (done) => {
                 const body = "this is a raw body";
-                return request(rawServer)
+                request(rawServer)
                     .post(`/?body raw`)
                     .type("application/octet-stream")
                     .send(body)
@@ -87,7 +88,7 @@ describe("mockserver", () => {
             });
 
             it("offers the body as form data if --body urlencoded is passed", (done) => {
-                return request(formServer)
+                request(formServer)
                     .post(`/?body urlencoded`)
                     .type("application/x-www-form-urlencoded")
                     .send("key=value")
@@ -108,7 +109,7 @@ describe("mockserver", () => {
                     "--body",
                     "text",
                     "-p",
-                    "8084",
+                    "8087",
                 ];
                 middlewareServer = start(newargs);
             });
@@ -125,26 +126,23 @@ describe("mockserver", () => {
             };
 
             it("uses the middleware to make body uppercase", (done) => {
-                return getResponse().expect("THIS IS A TEST").expect(200, done);
+                getResponse().expect("THIS IS A TEST").expect(200, done);
             });
 
             it("uses the middleware to create a uniqe id", (done) => {
-                return getResponse().expect("X-Response-ID", /\d{4}/, done);
+                getResponse().expect("X-Response-ID", /\d{4}/, done);
             });
 
             it("uses the middleware in order declared", (done) => {
-                return getResponse().expect("X-Body", "THIS IS A TEST", done);
+                getResponse().expect("X-Body", "THIS IS A TEST", done);
             });
 
             it("uses the after middleware to set cache", (done) => {
-                return getResponse().expect("X-Cache", /\d{4}/, done);
+                getResponse().expect("X-Cache", /\d{4}/, done);
             });
+
             it("uses the after middlewares in orders", (done) => {
-                return getResponse().expect(
-                    "X-Content",
-                    "THIS IS A TEST",
-                    done,
-                );
+                getResponse().expect("X-Content", "THIS IS A TEST", done);
             });
         });
     });
