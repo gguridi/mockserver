@@ -11,7 +11,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                nodejs: [14, 16, 17, 18, 19]
+                nodejs: [14, 16, 18, 19]
         steps:
             - uses: actions/checkout@v2
             - uses: actions/setup-node@v1
@@ -24,7 +24,7 @@ jobs:
             - name: run tests
               run: yarn test
 
-    publish:
+    publish-to-npm:
         needs:
             - mockserver-test
         runs-on: ubuntu-latest
@@ -46,3 +46,26 @@ jobs:
             - uses: JS-DevTools/npm-publish@v1
               with:
                   token: ${{ secrets.NPM_TOKEN }}
+
+    publish-to-docker:
+        needs:
+            - mockserver-test
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: set version envvar
+              run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:11})
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 16
+            - name: install dependencies
+              run: yarn install
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v2
+              with:
+                  username: ${{ secrets.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+            - name: build image
+              run: docker build -t gguridi/mockserver:version-$RELEASE_VERSION .
+            - name: push image
+              run: docker push -t gguridi/mockserver:version-$RELEASE_VERSION .
