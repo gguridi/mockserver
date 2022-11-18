@@ -1,15 +1,10 @@
+import bodyParser from "body-parser";
+import express from "express";
 import path from "path";
-import winston, { add, ExceptionHandler } from "winston";
-import newProgram, {
-    PARSER_JSON,
-    PARSER_TEXT,
-    PARSER_URLENCODED,
-    PARSER_RAW,
-} from "./cli";
+import winston from "winston";
+import newProgram, { PARSER_JSON, PARSER_RAW, PARSER_TEXT, PARSER_URLENCODED } from "./cli";
 import { getContent } from "./paths";
 import Response from "./response";
-import express from "express";
-import bodyParser from "body-parser";
 export { evaluateFile, evaluateJSON } from "./evaluations";
 
 export const logging = (level) => {
@@ -66,9 +61,7 @@ const delay = (res) => {
 };
 
 const handler = (program) => (req, res, next) => {
-    winston.debug(
-        `Received request ${req.url} with body ${JSON.stringify(req.body)}`,
-    );
+    winston.debug(`Received request ${req.url} with body ${JSON.stringify(req.body)}`);
 
     try {
         const [content, filepath] = getContent(req, program);
@@ -94,25 +87,24 @@ const handler = (program) => (req, res, next) => {
 export const start = (args) => {
     let program = newProgram();
     program.parse(args);
+    const options = program.opts();
 
-    logging(program.logLevel);
+    logging(options.logLevel);
 
     const app = express();
-    app.use(parser(program.body));
-    app.use(...middlewares("before.js", program));
-    app.all("*", handler(program));
-    app.use(...middlewares("after.js", program));
+    app.use(parser(options.body));
+    app.use(...middlewares("before.js", options));
+    app.all("*", handler(options));
+    app.use(...middlewares("after.js", options));
     app.use((_, res, next) => {
         delay(res);
         res.send(res.body);
     });
 
-    const mockserver = app.listen(program.port, () => {
+    const mockserver = app.listen(options.port, () => {
         const host = mockserver.address().address;
         const port = mockserver.address().port;
-        winston.info(
-            `Mockserver serving ${program.mocks} at http://${host}:${port}`,
-        );
+        winston.info(`Mockserver serving ${options.mocks} at http://${host}:${port}`);
     });
     return mockserver;
 };

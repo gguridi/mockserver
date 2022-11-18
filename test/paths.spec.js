@@ -1,17 +1,11 @@
 import httpMocks from "node-mocks-http";
-import {
-    getPathWildcards,
-    getPathParentWildcards,
-    getFilenames,
-    getFiles,
-    getContent,
-} from "../src/paths";
+import { getContent, getFilenames, getFiles, getPathWildcards } from "../src/paths";
 
 describe("paths to use for the request", () => {
     let request;
 
-    beforeEach(() => {
-        request = httpMocks.createRequest({
+    const createRequest = (data) => {
+        return httpMocks.createRequest({
             method: "GET",
             url: "/test/42/details?",
             body: "body",
@@ -20,7 +14,12 @@ describe("paths to use for the request", () => {
                 "Header-b": "valueB",
                 "header-c": "valueC",
             },
+            ...data,
         });
+    };
+
+    beforeEach(() => {
+        request = createRequest({});
     });
 
     describe("filename permutations", () => {
@@ -44,50 +43,35 @@ describe("paths to use for the request", () => {
             ["GET_Header-A=valueA_Header-B=valueB--body"],
         ];
 
-        it.each(expected)(
-            "uses the watched headers from options",
-            (expected) => {
-                const permutations = getFilenames(request, { headers });
-                expect(permutations).toContainEqual(expected);
-            },
-        );
+        it.each(expected)("uses the watched headers from options", (expected) => {
+            const permutations = getFilenames(request, { headers });
+            expect(permutations).toContainEqual(expected);
+        });
 
-        it.each(expected)(
-            "uses the watched headers from MOCK_HEADERS envvar",
-            (expected) => {
-                process.env["MOCK_HEADERS"] = headers;
-                expect(getFilenames(request, {})).toContainEqual(expected);
-                delete process.env["MOCK_HEADERS"];
-            },
-        );
+        it.each(expected)("uses the watched headers from MOCK_HEADERS envvar", (expected) => {
+            process.env["MOCK_HEADERS"] = headers;
+            expect(getFilenames(request, {})).toContainEqual(expected);
+            delete process.env["MOCK_HEADERS"];
+        });
 
-        it.each(expected)(
-            "removes the query parameters from path",
-            (expected) => {
-                request.url = "/test/42/details?this is to ignore";
-                const permutations = getFilenames(request, { headers });
-                expect(permutations).toContainEqual(expected);
-            },
-        );
+        it.each(expected)("removes the query parameters from path", (expected) => {
+            request = createRequest({ url: "/test/42/details?this is to ignore" });
+            const permutations = getFilenames(request, { headers });
+            expect(permutations).toContainEqual(expected);
+        });
 
         it("uses base if the root path is requested", () => {
-            request.url = "/";
-            request.body = "";
+            request = createRequest({ url: "/", body: "" });
             expect(getFilenames(request, {})).toEqual(["GET"]);
         });
 
         it("serialises body as url if it's an object", () => {
-            request.body = { test: "value" };
-            request.headers = {};
-            expect(getFilenames(request, {})).toEqual([
-                "GET",
-                "GET--test=value",
-            ]);
+            request = createRequest({ headers: {}, body: { test: "value" } });
+            expect(getFilenames(request, {})).toEqual(["GET", "GET--test=value"]);
         });
 
         it("uses query parameters in the permutations", () => {
-            request.url = "/?test=value";
-            request.headers = {};
+            request = createRequest({ headers: {}, url: "/?test=value" });
             expect(getFilenames(request, {})).toEqual([
                 "GET",
                 "GET--test=value",
@@ -109,12 +93,9 @@ describe("paths to use for the request", () => {
             ["__/__/__"],
         ];
 
-        it.each(expected)(
-            "uses wildcard __ to search generic paths",
-            (expected) => {
-                expect(getPathWildcards(request)).toContainEqual(expected);
-            },
-        );
+        it.each(expected)("uses wildcard __ to search generic paths", (expected) => {
+            expect(getPathWildcards(request)).toContainEqual(expected);
+        });
     });
 
     describe("paths to look for the response", () => {
@@ -133,16 +114,11 @@ describe("paths to use for the request", () => {
             ["here/test/42/__/GET", "here/test/42/details/GET"],
             ["here/test/42/details/GET", "here/test/42/details/GET--body"],
             ["here/__/__/__/GET", "here/__/42/__/GET"],
-        ])(
-            "the most generic wildcards go after the less generic wildcards",
-            (moreGeneric, lessGeneric) => {
-                expect(files).toContainEqual(moreGeneric);
-                expect(files).toContainEqual(lessGeneric);
-                expect(files.indexOf(lessGeneric)).toBeLessThan(
-                    files.indexOf(moreGeneric),
-                );
-            },
-        );
+        ])("the most generic wildcards go after the less generic wildcards", (moreGeneric, lessGeneric) => {
+            expect(files).toContainEqual(moreGeneric);
+            expect(files).toContainEqual(lessGeneric);
+            expect(files.indexOf(lessGeneric)).toBeLessThan(files.indexOf(moreGeneric));
+        });
 
         it("orders by path chunks and number wildcard, so the most generic path goes at the end", () => {
             const [lastItem] = files.slice(-1);
@@ -154,7 +130,7 @@ describe("paths to use for the request", () => {
         const options = { mocks: "./test/examples" };
 
         beforeEach(() => {
-            request.url = "/";
+            request = createRequest({ url: "/" });
         });
 
         test("loads file content if match found", () => {
@@ -168,13 +144,13 @@ describe("paths to use for the request", () => {
         });
 
         test("loads file for that request method only", () => {
-            request.method = "POST";
+            request = createRequest({ url: "/", method: "POST" });
             const [content, _] = getContent(request, options);
             expect(content).toContain("POST without body");
         });
 
         test("returns empty if no file matches", () => {
-            request.url = "/path/not/exists";
+            request = createRequest({ url: "/path/not/exists" });
             const [content, filepath] = getContent(request, options);
             expect(content).toEqual("");
             expect(filepath).toEqual("");

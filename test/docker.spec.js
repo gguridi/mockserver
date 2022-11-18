@@ -36,19 +36,11 @@ describe("docker integration", () => {
     });
 
     it("gets standard body request", (done) => {
-        frisby
-            .get("/?body")
-            .expect("status", 200)
-            .then(body("GET with body"))
-            .done(done);
+        frisby.get("/?body").expect("status", 200).then(body("GET with body")).done(done);
     });
 
     it("gets standard dynamic body request", (done) => {
-        frisby
-            .get("/?dynamic content")
-            .expect("status", 200)
-            .then(body("Dynamic Content"))
-            .done(done);
+        frisby.get("/?dynamic content").expect("status", 200).then(body("Dynamic Content")).done(done);
     });
 
     it("gets standard eval request", (done) => {

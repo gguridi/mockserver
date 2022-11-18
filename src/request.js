@@ -11,16 +11,11 @@ const findHeader = (headers, header) => {
 };
 
 export const getQuery = (request) => {
-    const url = request.url;
-    const index = url.indexOf("?");
-    return index >= 0
-        ? decodeURIComponent(url.substring(index + 1).replace(/\?/g, ""))
-        : "";
+    return request.query;
 };
 
 export const getPath = (request) => {
-    const query = getQuery(request);
-    return decodeURIComponent(request.url).replace(`?${query}`, "");
+    return request.path;
 };
 
 export const getMethod = (request) => {

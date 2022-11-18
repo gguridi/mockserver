@@ -1,11 +1,5 @@
 import httpMocks from "node-mocks-http";
-import {
-    getQuery,
-    getPath,
-    getMethod,
-    getHeadersToWatch,
-    getHeadersWatched,
-} from "../src/request";
+import { getHeadersToWatch, getHeadersWatched, getMethod, getPath, getQuery } from "../src/request";
 
 describe("request parser", () => {
     const request = httpMocks.createRequest({
@@ -22,7 +16,7 @@ describe("request parser", () => {
     });
 
     it("extracts the query", () => {
-        expect(getQuery(request)).toBe("paramA=43");
+        expect(getQuery(request)).toEqual({ paramA: "43" });
     });
 
     it("extracts the method", () => {
@@ -67,9 +61,7 @@ describe("request parser", () => {
 
         test("returns path-like matching getHeadersToWatch normalised", () => {
             const options = { headers: "headerA,headerB" };
-            expect(getHeadersWatched(request, options)).toEqual([
-                "_Headera=valueA",
-            ]);
+            expect(getHeadersWatched(request, options)).toEqual(["_Headera=valueA"]);
         });
     });
 });

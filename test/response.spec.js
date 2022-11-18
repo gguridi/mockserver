@@ -5,14 +5,19 @@ import Response from "../src/response";
 describe("response parser", () => {
     let request;
 
-    beforeEach(() => {
-        request = httpMocks.createRequest({
+    const createRequest = (data) => {
+        return httpMocks.createRequest({
             method: "GET",
+            ...data,
         });
+    };
+
+    beforeEach(() => {
+        request = createRequest({});
     });
 
-    const getResponse = (query) => {
-        request.url = `/?${encodeURIComponent(query)}`;
+    const getResponse = (query, data = {}) => {
+        request = createRequest({ url: `/?${encodeURIComponent(query)}`, ...data });
         const options = { mocks: "./test/examples" };
         const [content, filepath] = getContent(request, options);
         return new Response(content, filepath, request);
@@ -35,8 +40,7 @@ describe("response parser", () => {
         });
 
         it("returns 404 if not present", () => {
-            request.method = "OPTIONS";
-            const response = getResponse("unknown");
+            const response = getResponse("unknown", { method: "OPTIONS" });
             expect(response.status).toEqual("404");
         });
 
@@ -64,9 +68,7 @@ describe("response parser", () => {
             const time = 1530518207007;
             global.Date.now = jest.fn(() => time);
             const response = getResponse("dynamic content");
-            expect(response.headers["X-Subject-Token"]).toEqual(
-                time.toString(),
-            );
+            expect(response.headers["X-Subject-Token"]).toEqual(time.toString());
         });
 
         it("adds multiple same headers", () => {
@@ -107,8 +109,7 @@ describe("response parser", () => {
 
         it("adds body from multiple import json", () => {
             const response = getResponse("json body multiple");
-            const expected =
-                'before\n{ "key": "test-json" }\nmiddle\n{ "key": "test-json" }\nafter';
+            const expected = 'before\n{ "key": "test-json" }\nmiddle\n{ "key": "test-json" }\nafter';
             expect(response.body).toBe(expected);
         });
 
@@ -119,9 +120,7 @@ describe("response parser", () => {
 
         it("adds body from multiple eval", () => {
             const response = getResponse("multiple eval");
-            expect(response.body).toEqual(
-                "This is one eval\nThis is another eval",
-            );
+            expect(response.body).toEqual("This is one eval\nThis is another eval");
         });
 
         it("adds body from eval multiline", () => {
@@ -142,8 +141,7 @@ describe("response parser", () => {
         });
 
         it("returns empty body if not present", () => {
-            request.method = "OPTIONS";
-            const response = getResponse("unknown");
+            const response = getResponse("unknown", { method: "OPTIONS" });
             expect(response.body).toEqual("");
         });
     });
