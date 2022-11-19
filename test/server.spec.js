@@ -92,7 +92,7 @@ describe("mockserver", () => {
 
             beforeAll(() => {
                 const { start } = require("../src/server");
-                const newargs = [...args, "-w", "./test/examples/middlewares", "--body", "text", "-p", "8084"];
+                const newargs = [...args, "-w", "./test/examples/middlewares", "--body", "text", "-p", "8085"];
                 middlewareServer = start(newargs);
             });
 
