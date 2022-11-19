@@ -68,4 +68,4 @@ jobs:
             - name: build image
               run: docker build -t gguridi/mockserver:version-$RELEASE_VERSION .
             - name: push image
-              run: docker push -t gguridi/mockserver:version-$RELEASE_VERSION .
+              run: docker push gguridi/mockserver:version-$RELEASE_VERSION
