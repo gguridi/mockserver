@@ -1,3 +1,4 @@
+import { performance } from "perf_hooks";
 import request from "supertest";
 
 describe("mockserver", () => {
@@ -20,11 +21,7 @@ describe("mockserver", () => {
     describe("request body", () => {
         it("offers the body as json by default", (done) => {
             const body = { test: "value" };
-            return request(mockserver)
-                .post(`/?body json`)
-                .send(body)
-                .expect(body)
-                .expect(200, done);
+            request(mockserver).post(`/?body json`).send(body).expect(body).expect(200, done);
         });
 
         describe("text server", () => {
@@ -41,12 +38,7 @@ describe("mockserver", () => {
 
             it("offers the body as string if --body text is passed", (done) => {
                 const body = "this is a body string";
-                return request(textServer)
-                    .post(`/?body text`)
-                    .type("text/plain")
-                    .send(body)
-                    .expect(body)
-                    .expect(200, done);
+                request(textServer).post(`/?body text`).type("text/plain").send(body).expect(body).expect(200, done);
             });
         });
 
@@ -64,7 +56,7 @@ describe("mockserver", () => {
 
             it("offers the body as raw buffer if --body raw is passed", (done) => {
                 const body = "this is a raw body";
-                return request(rawServer)
+                request(rawServer)
                     .post(`/?body raw`)
                     .type("application/octet-stream")
                     .send(body)
@@ -87,7 +79,7 @@ describe("mockserver", () => {
             });
 
             it("offers the body as form data if --body urlencoded is passed", (done) => {
-                return request(formServer)
+                request(formServer)
                     .post(`/?body urlencoded`)
                     .type("application/x-www-form-urlencoded")
                     .send("key=value")
@@ -101,15 +93,7 @@ describe("mockserver", () => {
 
             beforeAll(() => {
                 const { start } = require("../src/server");
-                const newargs = [
-                    ...args,
-                    "-w",
-                    "./test/examples/middlewares",
-                    "--body",
-                    "text",
-                    "-p",
-                    "8084",
-                ];
+                const newargs = [...args, "-w", "./test/examples/middlewares", "--body", "text", "-p", "8085"];
                 middlewareServer = start(newargs);
             });
 
@@ -118,33 +102,26 @@ describe("mockserver", () => {
             });
 
             const getResponse = () => {
-                return request(middlewareServer)
-                    .post(`/?middlewares`)
-                    .type("text/plain")
-                    .send("this Is a Test");
+                return request(middlewareServer).post(`/?middlewares`).type("text/plain").send("this Is a Test");
             };
 
             it("uses the middleware to make body uppercase", (done) => {
-                return getResponse().expect("THIS IS A TEST").expect(200, done);
+                getResponse().expect("THIS IS A TEST").expect(200, done);
             });
 
             it("uses the middleware to create a uniqe id", (done) => {
-                return getResponse().expect("X-Response-ID", /\d{4}/, done);
+                getResponse().expect("X-Response-ID", /\d{4}/, done);
             });
 
             it("uses the middleware in order declared", (done) => {
-                return getResponse().expect("X-Body", "THIS IS A TEST", done);
+                getResponse().expect("X-Body", "THIS IS A TEST", done);
             });
 
             it("uses the after middleware to set cache", (done) => {
-                return getResponse().expect("X-Cache", /\d{4}/, done);
+                getResponse().expect("X-Cache", /\d{4}/, done);
             });
             it("uses the after middlewares in orders", (done) => {
-                return getResponse().expect(
-                    "X-Content",
-                    "THIS IS A TEST",
-                    done,
-                );
+                getResponse().expect("X-Content", "THIS IS A TEST", done);
             });
         });
     });
@@ -180,17 +157,13 @@ describe("mockserver", () => {
         ];
 
         it("adds it from import", (done) => {
-            getResponse("import header")
-                .expect("X-Header-Import", "Expect This")
-                .expect(200, done);
+            getResponse("import header").expect("X-Header-Import", "Expect This").expect(200, done);
         });
 
         it("adds specific header from eval", (done) => {
             const time = 1530518207007;
             global.Date.now = jest.fn(() => time);
-            getResponse("dynamic content")
-                .expect("X-Subject-Token", time.toString())
-                .expect(200, done);
+            getResponse("dynamic content").expect("X-Subject-Token", time.toString()).expect(200, done);
         });
 
         it("adds multiple same headers", (done) => {
@@ -199,47 +172,32 @@ describe("mockserver", () => {
                 .expect(200, done);
         });
 
-        it.each(headers)(
-            "adds all the headers it finds",
-            (key, value, done) => {
-                getResponse("multiple headers")
-                    .expect(key, value)
-                    .expect(200, done);
-            },
-        );
+        it.each(headers)("adds all the headers it finds", (key, value, done) => {
+            getResponse("multiple headers").expect(key, value).expect(200, done);
+        });
 
         it("adds it from eval using request information", (done) => {
             const query = "eval request available";
-            getResponse(query)
-                .expect("X-Query", `/?${query}`)
-                .expect(488, done);
+            getResponse(query).expect("X-Query", `/?${query}`).expect(488, done);
         });
     });
 
     describe("body", () => {
         it("adds body from import code", (done) => {
-            getResponse("import body")
-                .expect("Expect This Data")
-                .expect(200, done);
+            getResponse("import body").expect("Expect This Data").expect(200, done);
         });
 
         it("adds body from import json", (done) => {
-            getResponse("json body")
-                .expect(`{ "key": "test-json" }`)
-                .expect(200, done);
+            getResponse("json body").expect(`{ "key": "test-json" }`).expect(200, done);
         });
 
         it("adds body from import json in the middle of data", (done) => {
-            getResponse("json body middle")
-                .expect('before\n{ "key": "test-json" }\nafter')
-                .expect(200, done);
+            getResponse("json body middle").expect('before\n{ "key": "test-json" }\nafter').expect(200, done);
         });
 
         it("adds body from multiple import json", (done) => {
             getResponse("json body multiple")
-                .expect(
-                    'before\n{ "key": "test-json" }\nmiddle\n{ "key": "test-json" }\nafter',
-                )
+                .expect('before\n{ "key": "test-json" }\nmiddle\n{ "key": "test-json" }\nafter')
                 .expect(200, done);
         });
 
@@ -257,15 +215,11 @@ describe("mockserver", () => {
         });
 
         it("returns exception message if something unexpected happened", (done) => {
-            getResponse("exception")
-                .expect("Unable to evaluate boom!")
-                .expect(500, done);
+            getResponse("exception").expect("Unable to evaluate boom!").expect(500, done);
         });
 
         it("returns exception message if status is not valid", (done) => {
-            getResponse("invalid status")
-                .expect("Response code should be valid string")
-                .expect(500, done);
+            getResponse("invalid status").expect("Response code should be valid string").expect(500, done);
         });
 
         describe("multiple resources", () => {
@@ -277,9 +231,7 @@ describe("mockserver", () => {
             };
 
             it("composes from multiple files", (done) => {
-                getResponse("compose", "rest")
-                    .expect(resources)
-                    .expect(200, done);
+                getResponse("compose", "rest").expect(resources).expect(200, done);
             });
 
             it("composes from multiple json files recursively", (done) => {

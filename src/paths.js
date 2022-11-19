@@ -1,8 +1,8 @@
-import winston from "winston";
-import path from "path";
 import fs from "fs";
-import { getPath, getQuery, getHeadersWatched } from "./request";
+import path from "path";
 import combinatorics from "simple-combinatorics";
+import winston from "winston";
+import { getHeadersWatched, getPath, getQuery } from "./request";
 
 export const noEmpty = (item) => {
     return item;
@@ -38,7 +38,7 @@ export const getFiles = (request, options) => {
 
 const getQueryElements = (request) => {
     const query = getQuery(request);
-    return query ? [`--${query}`] : [];
+    return Object.entries(query).map(([key, value]) => (value ? `--${key}=${value}` : `--${key}`));
 };
 
 const getBodyElements = (request) => {
@@ -59,13 +59,9 @@ export const getFilenames = (request, options) => {
     );
     let combinations = [[""]];
     for (let i = 1; i <= elements.length; i++) {
-        combinations = combinations.concat(
-            combinatorics.permuteList(elements, i, true),
-        );
+        combinations = combinations.concat(combinatorics.permuteList(elements, i, true));
     }
-    return combinations
-        .map((file) => request.method + file.join(""))
-        .filter(unique);
+    return combinations.map((file) => request.method + file.join("")).filter(unique);
 };
 
 export const getPathWildcards = (request) => {
