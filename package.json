@@ -51,10 +51,5 @@
         ],
         "coverageDirectory": "./coverage/",
         "collectCoverage": true
-    },
-    "babel": {
-        "presets": [
-            "@babel/preset-env"
-        ]
     }
 }
