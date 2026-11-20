@@ -10,8 +10,8 @@ jobs:
             matrix:
                 nodejs: [22, 24, 26]
         steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v4
+            - uses: actions/checkout@v7
+            - uses: actions/setup-node@v7
               with:
                   node-version: ${{ matrix.nodejs }}
             - name: install dependencies
