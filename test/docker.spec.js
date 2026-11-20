@@ -55,7 +55,7 @@ describe("docker integration", () => {
         frisby
             .get("/rest?compose")
             .expect("status", 200)
-            .then(json({ resources: expect.objectContaining([]) }))
+            .then(json({ resources: expect.any(Array) }))
             .done(done);
     });
 
