@@ -252,7 +252,7 @@ describe("mockserver", () => {
         const { start } = require("../src/server");
         expect(() => {
             start([...args, "--body", "foo", "-p", "8085"]);
-        }).toThrowError("Unknown body parser foo");
+        }).toThrow("Unknown body parser foo");
     });
 
     it("does not stop if can't find the middlewares", (done) => {
