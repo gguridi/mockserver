@@ -4,6 +4,14 @@ on:
     release:
         types:
             - created
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: Existing release tag to publish to npm (e.g. v2.0.0)
+                required: true
+
+env:
+    RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
 
 jobs:
     mockserver-test:
@@ -14,6 +22,8 @@ jobs:
                 nodejs: [22, 24, 26]
         steps:
             - uses: actions/checkout@v7
+              with:
+                  ref: ${{ env.RELEASE_TAG }}
             - uses: actions/setup-node@v7
               with:
                   node-version: ${{ matrix.nodejs }}
@@ -28,10 +38,15 @@ jobs:
         needs:
             - mockserver-test
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write # npm trusted publishing (OIDC), no token secret
         steps:
             - uses: actions/checkout@v7
+              with:
+                  ref: ${{ env.RELEASE_TAG }}
             - name: set version envvar
-              run: echo "RELEASE_VERSION=$(echo ${GITHUB_REF:11})" >> $GITHUB_ENV
+              run: echo "RELEASE_VERSION=${RELEASE_TAG#v}" >> $GITHUB_ENV
             - name: set release version on package.json
               run: sed -i.bak 's/0\.0\.0/'$RELEASE_VERSION'/g' package.json
             - name: check package
@@ -39,22 +54,23 @@ jobs:
             - uses: actions/setup-node@v7
               with:
                   node-version: 24
+                  registry-url: https://registry.npmjs.org
             - name: install dependencies
               run: yarn install
             - name: run build
               run: yarn build
-            - uses: JS-DevTools/npm-publish@v4
-              with:
-                  token: ${{ secrets.NPM_TOKEN }}
+            - name: publish to npm
+              run: npm publish --access public
 
     publish-to-docker:
+        if: github.event_name == 'release'
         needs:
             - mockserver-test
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v7
             - name: set version envvar
-              run: echo "RELEASE_VERSION=$(echo ${GITHUB_REF:11})" >> $GITHUB_ENV
+              run: echo "RELEASE_VERSION=${RELEASE_TAG#v}" >> $GITHUB_ENV
             - name: set up QEMU
               uses: docker/setup-qemu-action@v4
             - name: set up Docker Buildx
