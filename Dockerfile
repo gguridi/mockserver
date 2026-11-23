@@ -1,4 +1,4 @@
-FROM node:16-alpine3.16
+FROM node:24-alpine
 
 ENV SERVER_FOLDER=/opt/mockserver
 

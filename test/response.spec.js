@@ -47,7 +47,7 @@ describe("response parser", () => {
         it("returns exception if status is not valid", () => {
             expect(() => {
                 getResponse("invalid status");
-            }).toThrowError("Response code should be valid string");
+            }).toThrow("Response code should be valid string");
         });
     });
 
