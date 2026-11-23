@@ -33,7 +33,7 @@ const parser = (requested) => {
         case PARSER_RAW:
             return bodyParser.raw();
         case PARSER_URLENCODED:
-            return bodyParser.urlencoded();
+            return bodyParser.urlencoded({ extended: true });
         default:
             throw new Error(`Unknown body parser ${requested}`);
     }
@@ -92,9 +92,10 @@ export const start = (args) => {
     logging(options.logLevel);
 
     const app = express();
+    app.set("query parser", "extended");
     app.use(parser(options.body));
     app.use(...middlewares("before.js", options));
-    app.all("*", handler(options));
+    app.all("/{*splat}", handler(options));
     app.use(...middlewares("after.js", options));
     app.use((_, res, next) => {
         delay(res);
